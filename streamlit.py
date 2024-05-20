@@ -38,13 +38,13 @@ options = ['NNJ00116', 'NNJ09304', 'NNJ00117',
             'NNJ06904', 'G-IIG231', 'NNJ09308', 'NNJ07503', 'NNJ06304']
 
 property_code = st.selectbox('Which property do you want to export?', options)
-st.button('Choose Property Code', on_click=property, args=(property_code, ))
+# st.button('Choose Property Code', on_click=property, args=(property_code, ))
 # print(option)
 # Define a default value for the session variable
-if "my_global_variable" not in st.session_state:
-    st.session_state.my_global_variable = options[0]
+# if "my_global_variable" not in st.session_state:
+#     st.session_state.my_global_variable = options[0]
 
-st.write('You selected:', st.session_state.my_global_variable)
+st.write('You selected:', property_code)
 
 
 # st.write('Export:', st.session_state.my_global_variable)
