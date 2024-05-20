@@ -4,6 +4,7 @@ import pandas as pd
 from io import StringIO
 from openpyxl import load_workbook
 import streamlit as st
+import os
 
 def export(property_code):
     key = "0cff9ebe895325dcb1201a55c2b8c1b03a9e4214aaf3c4da7390e9297a300b8ccc77bce196c4abd0"
@@ -192,8 +193,13 @@ def export(property_code):
                         # unit_tab['E30'].value = unit_record["Smart Building features"]
 
                 # Save the workbook with the property code as the filename
+                # directory = r"\\pennoni.com\data\Accounts\PROLO\PROLO23008 - NJ PUC Double Blind\DELIVERABLES"
+                directory = r"C:\Users\louie\Desktop\repo\Fulcrum"
+
                 filename = f"{property_code}.xlsx"
-                wb.save(filename)
+                file_path = os.path.join(directory, f"{property_code}.xlsx")
+
+                wb.save(file_path)
             # return f"Workbook successfully created: {filename}"
         
             st.write(f"Workbook successfully created: {filename}")
