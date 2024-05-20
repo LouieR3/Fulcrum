@@ -194,7 +194,7 @@ def export(property_code):
 
                 # Save the workbook with the property code as the filename
                 # directory = r"\\pennoni.com\data\Accounts\PROLO\PROLO23008 - NJ PUC Double Blind\DELIVERABLES"
-                directory = r"C:\Users\louie\Desktop\repo\Fulcrum"
+                directory = r"Fulcrum"
 
                 filename = f"{property_code}.xlsx"
                 file_path = os.path.join(directory, filename)
