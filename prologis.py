@@ -197,7 +197,7 @@ def export(property_code):
                 directory = r"C:\Users\louie\Desktop\repo\Fulcrum"
 
                 filename = f"{property_code}.xlsx"
-                file_path = os.path.join(directory, f"{property_code}.xlsx")
+                file_path = os.path.join(directory, filename)
 
                 wb.save(file_path)
             # return f"Workbook successfully created: {filename}"
