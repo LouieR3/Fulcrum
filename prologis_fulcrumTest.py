@@ -21,14 +21,7 @@ start_time = time.time()
 key = "0cff9ebe895325dcb1201a55c2b8c1b03a9e4214aaf3c4da7390e9297a300b8ccc77bce196c4abd0"
 
 fulcrum = Fulcrum(key=key)
-# forms = fulcrum.forms.search("Prologis NJ PUC 2024")
-# # print(forms)
-# appID = "7760b3b1-8b7b-4724-a5e9-3b235f193fe7"
-# prologis = fulcrum.forms.find(appID)
 
-# records = fulcrum.records.search(url_params={"form_id": appID})
-
-# as_csv = fulcrum.query('SELECT * FROM "Prologis NJ PUC 2024" WHERE 1;', 'csv')
 as_csv = fulcrum.query('SELECT * FROM "Prologis NJ PUC 2024";', 'csv')
 s=str(as_csv,'utf-8')
 data = StringIO(s) 
