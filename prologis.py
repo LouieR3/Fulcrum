@@ -80,118 +80,130 @@ def export(property_code):
     # Filter records_filtered and units_df_filtered based on record_id
     # record_id = "1a173c60-0059-4ab4-9e43-7012bf1e6788"
     records_filtered = records_filtered[records_filtered["Property Code"] == property_code]
-    units_df_filtered = units_df_filtered[units_df_filtered["record_id"] == record_id]
+    # Ensure records_filtered is not empty
+    if not records_filtered.empty:
+        # Assign record_id to the value of record_id in the first row of records_filtered
+        record_id = records_filtered.iloc[0]["record_id"]
+        
+        # Filter units based on the assigned record_id
+        units_df_filtered = units_df_filtered[units_df_filtered["record_id"] == record_id]
+        def ordinal(n):
+            """Convert an integer into its ordinal representation."""
+            if 10 <= n % 100 <= 20:
+                suffix = 'th'
+            else:
+                suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')
+            return str(n) + suffix
+        
+        try:
+            # Create and populate workbooks for each property code
+            for idx, record in records_filtered.iterrows():
+                property_code = record['Property Code']
+                record_id = record['record_id']
+                print(record_id)
+                
+                # Load the template workbook
+                wb = load_workbook('Prologis Template.xlsx')
+                property_tab = wb["Property"]
 
-    def ordinal(n):
-        """Convert an integer into its ordinal representation."""
-        if 10 <= n % 100 <= 20:
-            suffix = 'th'
-        else:
-            suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')
-        return str(n) + suffix
+                # Populate property_tab
+                property_tab['E2'].value = record['Property Code']
+                property_tab['E4'].value = record['Number of Warehouse Floors']
+                property_tab['E5'].value = record['Clear Height Feet']
+                property_tab['F5'].value = record['Clear Height Inch']
+                property_tab['E6'].value = record['Building Depth Feet']
+                property_tab['F6'].value = record['Building Depth Inch']
+                property_tab['E7'].value = record['Building Length Feet']
+                property_tab['F7'].value = record['Building Length Inch']
+                property_tab['E8'].value = record['Column Space Depth Feet']
+                property_tab['F8'].value = record['Column Space Depth Inch']
+                property_tab['E9'].value = record['Column Space Length Feet']
+                property_tab['F9'].value = record['Column Space Length Inch']
+                property_tab['E10'].value = record['Cross-Dock']
+                property_tab['E11'].value = record['Speed Bay Depth - Front Feet']
+                property_tab['F11'].value = record['Speed Bay Depth - Front Inch']
+                property_tab['E12'].value = record['Truck Court Depth - Front Feet']
+                property_tab['F12'].value = record['Truck Court Depth - Front Inch']
+                property_tab['E13'].value = record['Speed Bay Depth - Back Feet']
+                property_tab['F13'].value = record['Speed Bay Depth - Back Inch']
+                property_tab['E14'].value = record['Truck Court Depth - Back Feet']
+                property_tab['F14'].value = record['Truck Court Depth - Back Inch']
+                property_tab['E15'].value = record['Car Parking']
+                property_tab['E16'].value = record['Trailer Parking']
+                
+                # Split Site Security and populate across E17-J17
+                site_security_values = record['Site Security'].split(',')
+                for i, value in enumerate(site_security_values):
+                    property_tab.cell(row=17, column=5+i).value = value.strip()
+                
+                property_tab['E18'].value = record['Rail Served']
+                property_tab['E19'].value = record['Building Facade']
+                property_tab['E21'].value = record['Floor Thickness']
+                property_tab['E22'].value = record['Floor Reinforcement']
+                property_tab['E23'].value = record['Designed Floor Flat/Level']
+                property_tab['E24'].value = record['Finished Floor Elevation']
+                property_tab['E25'].value = record['Notes']
+                property_tab['E27'].value = record['Main Service Transformer kVA']
+                property_tab['E28'].value = record['Main Service Size in Amps']
+                property_tab['E29'].value = record['Main Service Size in Volts']
+                property_tab['E31'].value = record['Main Service Transformer Owner']
+                property_tab['E33'].value = record['Exterior Building Lighting Type']
+                property_tab['E35'].value = record['Solar System']
+                property_tab['E37'].value = record['Back-up Energy']
+                property_tab['E38'].value = record['EV Car Charging']
+                property_tab['E39'].value = record['EV Truck Charging']
+                property_tab['E40'].value = record['Fiber Backbone']
+                property_tab['E42'].value = record['Green Certification']
+
+                print("Property Tab made")
+                
+                # Filter units for the current record_id and populate unit tabs
+                unit_records = units_df_filtered[units_df_filtered['record_id'] == record_id]
+                for unit_idx, unit_record in unit_records.iterrows():
+                    unit_tab_name = f"{ordinal(unit_idx+1)} Unit"
+                    if unit_tab_name in wb.sheetnames:
+                        unit_tab = wb[unit_tab_name]
+                        unit_tab['E2'].value = unit_record["Unit Code"]
+                        unit_tab['E4'].value = unit_record["Main Floor Office Area"]
+                        unit_tab['E5'].value = unit_record["Warehouse Area"]
+                        unit_tab['E6'].value = unit_record["Office Mezzanine"]
+                        unit_tab['E7'].value = unit_record["Mezzanine Office Area"]
+                        unit_tab['E9'].value = unit_record["Clear Height Feet"]
+                        unit_tab['F9'].value = unit_record["Clear Height Inch"]
+                        unit_tab['E10'].value = unit_record["Cross-Dock"]
+                        unit_tab['E11'].value = unit_record["Dock High Doors"]
+                        unit_tab['E12'].value = unit_record["Edge of Dock Levelers"]
+                        unit_tab['E13'].value = unit_record["Pit Levelers"]
+                        unit_tab['E14'].value = unit_record["Vehicle Restraints"]
+                        unit_tab['E15'].value = unit_record["Drive-in Doors"]
+                        unit_tab['E16'].value = unit_record["Cooling Available in Warehouse"]
+                        unit_tab['E17'].value = unit_record["Fire Suppression System"]
+                        unit_tab['E19'].value = unit_record["If calculated system, add calculation"]
+                        unit_tab['E20'].value = unit_record["If ESFR, add K-value"]
+                        unit_tab['E21'].value = unit_record["Notes"]
+                        unit_tab['E23'].value = unit_record["Amperage available for the unit"]
+                        unit_tab['E24'].value = unit_record["KVA Rights Owned"]
+                        unit_tab['E26'].value = unit_record["Office Lighting Type"]
+                        unit_tab['E28'].value = unit_record["Warehouse Lighting Type"]
+                        # Split Site Security and populate across E17-J17
+                        site_buildfeatures_values = unit_record['Smart Building features'].split(',')
+                        for i, value in enumerate(site_buildfeatures_values):
+                            property_tab.cell(row=30, column=5+i).value = value.strip()
+                        # unit_tab['E30'].value = unit_record["Smart Building features"]
+
+                # Save the workbook with the property code as the filename
+                filename = f"{property_code}.xlsx"
+                wb.save(filename)
+            # return f"Workbook successfully created: {filename}"
+        
+            st.write(f"Workbook successfully created: {filename}")
+        except Exception as e:
+            st.write(f"An error occurred: {e}")
+            # return f"An error occurred: {e}"
+    else:
+        # Handle the case where no records match the property_code
+        # You can raise an exception, print a message, or handle it as per your application's logic
+        print("No records found for the given property_code")
+        st.write("No records found for the given Property Code")
+
     
-    try:
-        # Create and populate workbooks for each property code
-        for idx, record in records_filtered.iterrows():
-            property_code = record['Property Code']
-            record_id = record['record_id']
-            print(record_id)
-            
-            # Load the template workbook
-            wb = load_workbook('Prologis Template.xlsx')
-            property_tab = wb["Property"]
-
-            # Populate property_tab
-            property_tab['E2'].value = record['Property Code']
-            property_tab['E4'].value = record['Number of Warehouse Floors']
-            property_tab['E5'].value = record['Clear Height Feet']
-            property_tab['F5'].value = record['Clear Height Inch']
-            property_tab['E6'].value = record['Building Depth Feet']
-            property_tab['F6'].value = record['Building Depth Inch']
-            property_tab['E7'].value = record['Building Length Feet']
-            property_tab['F7'].value = record['Building Length Inch']
-            property_tab['E8'].value = record['Column Space Depth Feet']
-            property_tab['F8'].value = record['Column Space Depth Inch']
-            property_tab['E9'].value = record['Column Space Length Feet']
-            property_tab['F9'].value = record['Column Space Length Inch']
-            property_tab['E10'].value = record['Cross-Dock']
-            property_tab['E11'].value = record['Speed Bay Depth - Front Feet']
-            property_tab['F11'].value = record['Speed Bay Depth - Front Inch']
-            property_tab['E12'].value = record['Truck Court Depth - Front Feet']
-            property_tab['F12'].value = record['Truck Court Depth - Front Inch']
-            property_tab['E13'].value = record['Speed Bay Depth - Back Feet']
-            property_tab['F13'].value = record['Speed Bay Depth - Back Inch']
-            property_tab['E14'].value = record['Truck Court Depth - Back Feet']
-            property_tab['F14'].value = record['Truck Court Depth - Back Inch']
-            property_tab['E15'].value = record['Car Parking']
-            property_tab['E16'].value = record['Trailer Parking']
-            
-            # Split Site Security and populate across E17-J17
-            site_security_values = record['Site Security'].split(',')
-            for i, value in enumerate(site_security_values):
-                property_tab.cell(row=17, column=5+i).value = value.strip()
-            
-            property_tab['E18'].value = record['Rail Served']
-            property_tab['E19'].value = record['Building Facade']
-            property_tab['E21'].value = record['Floor Thickness']
-            property_tab['E22'].value = record['Floor Reinforcement']
-            property_tab['E23'].value = record['Designed Floor Flat/Level']
-            property_tab['E24'].value = record['Finished Floor Elevation']
-            property_tab['E25'].value = record['Notes']
-            property_tab['E27'].value = record['Main Service Transformer kVA']
-            property_tab['E28'].value = record['Main Service Size in Amps']
-            property_tab['E29'].value = record['Main Service Size in Volts']
-            property_tab['E31'].value = record['Main Service Transformer Owner']
-            property_tab['E33'].value = record['Exterior Building Lighting Type']
-            property_tab['E35'].value = record['Solar System']
-            property_tab['E37'].value = record['Back-up Energy']
-            property_tab['E38'].value = record['EV Car Charging']
-            property_tab['E39'].value = record['EV Truck Charging']
-            property_tab['E40'].value = record['Fiber Backbone']
-            property_tab['E42'].value = record['Green Certification']
-
-            print("Property Tab made")
-            
-            # Filter units for the current record_id and populate unit tabs
-            unit_records = units_df_filtered[units_df_filtered['record_id'] == record_id]
-            for unit_idx, unit_record in unit_records.iterrows():
-                unit_tab_name = f"{ordinal(unit_idx+1)} Unit"
-                if unit_tab_name in wb.sheetnames:
-                    unit_tab = wb[unit_tab_name]
-                    unit_tab['E2'].value = unit_record["Unit Code"]
-                    unit_tab['E4'].value = unit_record["Main Floor Office Area"]
-                    unit_tab['E5'].value = unit_record["Warehouse Area"]
-                    unit_tab['E6'].value = unit_record["Office Mezzanine"]
-                    unit_tab['E7'].value = unit_record["Mezzanine Office Area"]
-                    unit_tab['E9'].value = unit_record["Clear Height Feet"]
-                    unit_tab['F9'].value = unit_record["Clear Height Inch"]
-                    unit_tab['E10'].value = unit_record["Cross-Dock"]
-                    unit_tab['E11'].value = unit_record["Dock High Doors"]
-                    unit_tab['E12'].value = unit_record["Edge of Dock Levelers"]
-                    unit_tab['E13'].value = unit_record["Pit Levelers"]
-                    unit_tab['E14'].value = unit_record["Vehicle Restraints"]
-                    unit_tab['E15'].value = unit_record["Drive-in Doors"]
-                    unit_tab['E16'].value = unit_record["Cooling Available in Warehouse"]
-                    unit_tab['E17'].value = unit_record["Fire Suppression System"]
-                    unit_tab['E19'].value = unit_record["If calculated system, add calculation"]
-                    unit_tab['E20'].value = unit_record["If ESFR, add K-value"]
-                    unit_tab['E21'].value = unit_record["Notes"]
-                    unit_tab['E23'].value = unit_record["Amperage available for the unit"]
-                    unit_tab['E24'].value = unit_record["KVA Rights Owned"]
-                    unit_tab['E26'].value = unit_record["Office Lighting Type"]
-                    unit_tab['E28'].value = unit_record["Warehouse Lighting Type"]
-                    # Split Site Security and populate across E17-J17
-                    site_buildfeatures_values = unit_record['Smart Building features'].split(',')
-                    for i, value in enumerate(site_buildfeatures_values):
-                        property_tab.cell(row=30, column=5+i).value = value.strip()
-                    # unit_tab['E30'].value = unit_record["Smart Building features"]
-
-            # Save the workbook with the property code as the filename
-            filename = f"{property_code}.xlsx"
-            wb.save(filename)
-        # return f"Workbook successfully created: {filename}"
-    
-        st.write(f"Workbook successfully created: {filename}")
-    except Exception as e:
-        st.write(f"An error occurred: {e}")
-        # return f"An error occurred: {e}"
